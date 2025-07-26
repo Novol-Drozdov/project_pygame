@@ -9,6 +9,8 @@ FPS = 60
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
+pygame.display.set_caption('Flappy Bird')
+
 font1 = pygame.font.Font(None, 35)
 font2 = pygame.font.Font(None, 8)
 
@@ -19,6 +21,12 @@ imgPB = pygame.image.load(Path('project_pygame') / 'Flappy_Bird' / 'images' / 'p
 imgBird = pygame.image.load(Path('project_pygame') / 'Flappy_Bird' / 'images' / 'bird.png')
 
 pygame.display.set_icon(icon)
+
+pygame.mixer.music.load(Path('project_pygame') / 'Flappy_Bird' / 'sounds' / 'music.mp3')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1)
+
+sndFall = pygame.mixer.Sound(Path('project_pygame') / 'Flappy_Bird' / 'sounds' / 'fall.wav')
 
 py, sy, ay = HEIGHT // 2, 0, 0
 player = pygame.Rect(WIDTH // 3, py, 34, 24)
@@ -50,24 +58,22 @@ while play:
     keys = pygame.key.get_pressed()
     click = press[0] or keys[pygame.K_SPACE]
 
-    if timer > 0:
-        timer -= 1
+    if timer > 0: timer -= 1
+
     frame = (frame + 0.2) % 4
-    pipeSpeed = 3 + scores // 100
 
     for i in range(len(bges)-1, -1, -1):
         bg = bges[i]
         bg.x -= pipeSpeed // 2
 
-        if bg.right < 0:
-            bges.remove(bg)
+        if bg.right < 0: bges.remove(bg)
         
         if bges[len(bges) - 1].right <= WIDTH:
             bges.append(pygame.Rect(bges[len(bges) - 1].right, 0, 288, 600))
 
     for i in range(len(pipes)-1, -1, -1):
         pipe = pipes[i]
-        pipe.x -= pipeSpeed
+        pipe.x -= pipeSpeed 
 
         if pipe.right < 0:
             pipes.remove(pipe)
@@ -76,41 +82,45 @@ while play:
         
     if state == 'start':
         
-        if click and timer == 0 and len(pipes) == 0:
-            state = 'play'
+        if click and timer == 0 and len(pipes) == 0: state = 'play'
 
         py += (HEIGHT // 2 - py) * 0.1
         player.y = py
         
     elif state == 'play':
-        if click:
-            ay = -2
-        else:
-            ay = 0
+        if click: ay = -2
+        else: ay = 0
 
         py += sy
         sy = (sy + ay + 1) * 0.98
         player.y = py
 
         if len(pipes) == 0 or pipes[len(pipes)-1].x < WIDTH - 200:
-            pipes.append(pygame.Rect(WIDTH, 0, 50, pipeGatePos -pipeGateSize // 2 ))
-            pipes.append(pygame.Rect(WIDTH, 400, 52, 200))
+            pipes.append(pygame.Rect(WIDTH, 0, 50, pipeGatePos - pipeGateSize // 2 ))
+            pipes.append(pygame.Rect(WIDTH, pipeGatePos + pipeGateSize // 2 , 52, HEIGHT - pipeGatePos + pipeGateSize))
 
-        if player.top < 0 or player.bottom > HEIGHT:
-            state = 'fall'
+            pipeGatePos += randint(-100, 100)
+            if pipeGatePos < pipeGateSize:
+                pipeGatePos = pipeGateSize
+            elif pipeGatePos > HEIGHT - pipeGateSize:
+                pipeGatePos = HEIGHT - pipeGateSize
+
+        if player.top < 0 or player.bottom > HEIGHT: state = 'fall'
 
         for pipe in pipes:
-            if player.colliderect(pipe):
-                state = 'fall'
+            if player.colliderect(pipe): state = 'fall'
             
             if pipe.right < player.left and pipe not in pipesScores:
                 pipesScores.append(pipe)
                 scores += 5
+                pipeSpeed = 3 + scores // 100
         
     elif state == 'fall':
+        sndFall.play()
         sy, ay = 0, 0
+        pipeGatePos = HEIGHT // 2
+
         lives -= 1
-        
         if lives > 0:
             state = 'start'
             timer = 60
@@ -123,13 +133,10 @@ while play:
         sy = (sy + ay + 1) * 0.98
         player.y = py
 
-        if timer == 0:
-            play = False
+        if timer == 0: play = False
 
-
-    window.fill('black')
-    for bg in bges:
-        window.blit(imgBG, bg)
+#отрисовка игры
+    for bg in bges: window.blit(imgBG, bg)
 
     for pipe in pipes:
             if pipe.y == 0:
