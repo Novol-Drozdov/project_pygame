@@ -9,6 +9,8 @@ FPS = 60
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
+BASE_DIR = Path(__file__).parent
+
 pygame.display.set_caption('Flappy Bird')
 
 font1 = pygame.font.Font(None, 35)

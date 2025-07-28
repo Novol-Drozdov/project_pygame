@@ -1,16 +1,15 @@
 import pygame
-from random import randint
 pygame.init()
 
-WiDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 800, 600
 FPS = 60
 
-window = pygame.display.set_mode((WiDTH, HEIGHT))
+window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-cellsize = 50
+cellsize = 10
 world = []
-worldWidth, worldHeight = WiDTH // cellsize, HEIGHT // cellsize
+worldWidth, worldHeight = WIDTH // cellsize, HEIGHT // cellsize
 
 
 for row in range(worldHeight):
