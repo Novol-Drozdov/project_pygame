@@ -9,8 +9,14 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 pygame.mouse.set_visible(False)
 
-imgAim = pygame.image.load('project_pygame/Airstrike/aim.png').convert_alpha()
+imgAim = pygame.image.load('project_pygame/Airstrike/aimAnim.png').convert_alpha()
+imgAimList = [imgAim.subsurface(0, 0, 50, 50),
+              imgAim.subsurface(50, 0, 50, 50),
+              imgAim.subsurface(100, 0, 50, 50),
+              imgAim.subsurface(150, 0, 50, 50),]
+
 imgBomb = pygame.image.load('project_pygame/Airstrike/bomb.png').convert_alpha()
+imgBoom = pygame.image.load('project_pygame/Airstrike/boom.png').convert_alpha()
 
 imgBombMini = pygame.transform.scale(imgBomb, (imgBomb.get_width() // 5, imgBomb.get_height() // 5))
 
@@ -21,6 +27,15 @@ bombs = []
 bombSpeed = 5
 bombCount = 50
 bombTimer = 120
+
+boomPX, boomPY = 0, 0
+boomFrame = -1
+boomFrameCount = 7
+boomFrameSpeed = 0.3
+
+aimFrame = 0
+aimFrameCount = 4
+aimFrameSpeed = 0.3
 
 play = True
 while play:
@@ -56,19 +71,35 @@ while play:
             if lives < 1: play = False
             bombs.pop(i)
 
+            boomFrame = 0
+            boomPX, boomPY = bombRect.midbottom
+
+    if boomFrame >= 0:
+        boomFrame += boomFrameSpeed
+        if boomFrame >= boomFrameCount:
+            boomFrame = -1
+
     if lives <= 0:
         print('Вы проиграли.')
         play = False
     elif bombCount <= 0:
         print('Вы победили!')
         play = False
+
+    aimFrame = (aimFrame + aimFrameSpeed) % aimFrameCount
     
     window.fill('lightblue')
     for bombRect in bombs:
         window.blit(imgBomb, bombRect)
-        
-    aimRect = imgAim.get_rect(center=(mx, my))
-    window.blit(imgAim, aimRect)
+    
+    if boomFrame >= 0:
+        image = imgBoom.subsurface(int(boomFrame) * 85, 0, 85, 95)
+        rect = image.get_rect(midbottom=(boomPX, boomPY))
+        window.blit(image, rect)
+
+    aimImage = imgAimList[int(aimFrame)]
+    aimRect = aimImage.get_rect(center=(mx, my))
+    window.blit(aimImage, aimRect)
 
     for i in range(liveMax):
         pygame.draw.rect(window, 'gray70', (10 + i * 8, 10, 6, 20))
