@@ -22,7 +22,7 @@ class Drop:
             self.py = randint(-HEIGHT, 0)
 
     def draw (self):
-        pygame.draw.circle(window, self.color, (self.px, self.py), self.size)
+        pygame.draw.line(window, self.color, (self.px, self.py), (self.px, self.py + self.size * 5), 1)
 
 rain = []
 
