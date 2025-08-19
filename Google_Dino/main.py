@@ -1,4 +1,5 @@
 import pygame
+from random import randint, choice
 pygame.init()
 
 WIDTH, HEIGHT = 1000, 400
@@ -25,12 +26,45 @@ imgPter = [imgSprites.subsurface(260, 0, 92, 82),
            imgSprites.subsurface(352, 0, 92, 82),]
 
 
+
 py, sy = 380, 0
 isStand = False
 speed = 10
 frame = 0
 
 bgs = [pygame.Rect(0, HEIGHT - 50, 2400, 26)]
+objects = []
+timer = 0
+
+class Obj:
+    def __init__(self):
+        objects.append(self)
+
+        if randint(0, 4) == 0:
+            self.image = imgPter
+            self.speed = 3
+            py = HEIGHT - 30 - randint(0, 2) * 50
+        else:
+            self.image = [choice(imgCactus)]
+            self.speed = 0
+            py = HEIGHT - 20
+        
+        self.rect = self.image[0].get_rect(bottomleft = (WIDTH, py))
+        self.frame = 0
+    
+    def update(self):
+        global speed, timer, sy
+
+        self.rect.x -= speed + self.speed
+        self.frame = (self.frame + 0.1) % len(self.image)
+
+        if self.rect.colliderect(dinoRect) and speed != 0:
+            speed = 0
+            timer = 60
+            sy = -10
+
+    def draw(self):
+        window.blit(self.image[int(self.frame)], self.rect)
 
 play = True
 while play:
@@ -68,8 +102,17 @@ while play:
     if bgs[-1].right < WIDTH:
         bgs.append(pygame.Rect(bgs[-1].right, HEIGHT - 50, 2400, 26))
 
+    for obj in objects: obj.update()
+
+    if timer > 0: timer -= 1
+    elif speed > 0:
+        timer = randint(100, 150)
+        Obj()
+
+
     window.fill('white')
     for bg in bgs: window.blit(imgBG, bg)
+    for obj in objects: obj.draw()
     window.blit(dinoImage, dinoRect)
 
     pygame.display.update()
