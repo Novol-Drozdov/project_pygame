@@ -14,10 +14,20 @@ imgDinoStand = [imgSprites.subsurface(1514, 2, 88, 94),
 imgDinoSit = [imgSprites.subsurface(1866, 36, 118, 60),
               imgSprites.subsurface(1984, 36, 118, 60)]
 imgDinoLose = [imgSprites.subsurface(1690, 2, 88, 94)]
+imgCactus = [imgSprites.subsurface(446, 2, 34, 70),
+             imgSprites.subsurface(480, 2, 68, 70),
+             imgSprites.subsurface(512, 2, 102, 70),
+             imgSprites.subsurface(512, 2, 68, 70),
+             imgSprites.subsurface(652, 2, 50, 100),
+             imgSprites.subsurface(752, 2, 98, 100),
+             imgSprites.subsurface(850, 2, 102, 100),]
+imgPter = [imgSprites.subsurface(260, 0, 92, 82),
+           imgSprites.subsurface(352, 0, 92, 82),]
+
 
 py, sy = 380, 0
 isStand = False
-speed = 200
+speed = 10
 frame = 0
 
 bgs = [pygame.Rect(0, HEIGHT - 50, 2400, 26)]
